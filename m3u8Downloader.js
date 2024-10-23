@@ -12,11 +12,11 @@ let decryptedDir = config.decryptedDir;
 
 pt.use(StealthPlugin());
 
-const downloadM3U8 = async (url) => {
-    const start = performance.now();
-    const browser = await pt.launch({
-        executablePath: '/usr/bin/chromium-browser'
-    });
+const downloadM3U8 = async () => {
+    // const browser = await pt.launch({
+    //     executablePath: '/usr/bin/chromium-browser'
+    // });
+    const browser = await pt.launch();
 
     const page = await browser.newPage();
     await page.goto(config.siteURL, {

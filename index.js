@@ -5,7 +5,7 @@ const { decryptTSFiles, mergeTSFiles } = require('./tsHandler');
 const config = require('./config');
 
 const main = async () => {
-  await downloadM3U8(config.siteURL);
+  await downloadM3U8();
 
   const { keyURI, tsFiles } = await parseM3U8();
   await decryptTSFiles(keyURI);
