@@ -1,0 +1,11 @@
+# modules
+node_modules
+
+# generated folders
+ts_files
+decrypted_ts_files
+m3u8_files
+output_files
+
+# downloaded logs
+output.mp4

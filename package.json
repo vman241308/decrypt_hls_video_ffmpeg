@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "axios": "^1.7.7",
+    "child_process": "^1.0.2",
+    "crypto": "^1.0.1",
+    "fs": "^0.0.1-security",
+    "puppeteer-core": "^23.6.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-adblocker": "^2.13.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2"
+  }
+}
