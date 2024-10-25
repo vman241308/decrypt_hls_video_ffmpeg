@@ -4,7 +4,7 @@ const crypto = require("crypto");
 const { spawn } = require("child_process");
 const path = require("path");
 
-const {makeDirectory, makeSubDirectory} = require("./utils")
+const { makeDirectory, makeSubDirectory } = require("./utils");
 const config = require("./config");
 
 let tsFilesDir = config.tsFilesDir;
@@ -18,12 +18,12 @@ const decryptTSFiles = async (keyURIAndFileNames) => {
   const key = await keyResponse.arrayBuffer();
 
   // Create decrypted directory if it doesn't exist
-  await makeDirectory(decryptedDir)
+  await makeDirectory(decryptedDir);
 
   for (let i = 0; i < keyURIAndFileNames.length; i++) {
     const keyURIAndFileName = keyURIAndFileNames[i];
 
-    await makeSubDirectory(decryptedDir, keyURIAndFileName.dirName)
+    await makeSubDirectory(decryptedDir, keyURIAndFileName.dirName);
 
     const files = fs.readdirSync(`${tsFilesDir}/${keyURIAndFileName.dirName}`);
 
@@ -66,7 +66,7 @@ const mergeTSFiles = async (keyURIAndFileNames, outputFileName) => {
   for (let i = 0; i < keyURIAndFileNames.length; i++) {
     const keyURIAndFileName = keyURIAndFileNames[i];
 
-    await makeSubDirectory(outputDir, keyURIAndFileName.dirName)
+    await makeSubDirectory(outputDir, keyURIAndFileName.dirName);
 
     try {
       const files = fs
@@ -88,10 +88,7 @@ const mergeTSFiles = async (keyURIAndFileNames, outputFileName) => {
       );
 
       // Ensure the directory exists before writing the concat file
-      await makeSubDirectory(decryptedDir, keyURIAndFileName.dirName)
-
-      console.log("~~~~~~~~~~~~~~~~~~~~~~~~");
-      console.log(fileList);
+      await makeSubDirectory(decryptedDir, keyURIAndFileName.dirName);
 
       await fs.promises.writeFile(concatFilePath, fileList);
 

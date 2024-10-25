@@ -5,19 +5,46 @@ const config = require("./config");
 let m3u8FileDir = config.m3u8FileDir;
 
 let keyAndFileNamesformat = {
+  m3u8DirName: "",
   dirName: "",
   keyURI: "",
   tsFiles: [],
 };
 
-const getkeyURIAndFileNames = async () => {
+let m3u8DirAndNameFormat = {
+  dirName: "",
+  m3u8FileName: "",
+};
+
+const getkeyURIAndFileNames = async (m3u8ContentLinks) => {
   try {
+    let m3u8DirAndNames = [];
+
+    m3u8ContentLinks.forEach((link) => {
+      let parts = link.split("/");
+      let dirName = parts[0];
+      let m3u8FileName = parts[1];
+      let format = {
+        dirName: dirName,
+        m3u8FileName: m3u8FileName,
+      };
+      m3u8DirAndNames.push(format);
+    });
+
     const files = fs.readdirSync(m3u8FileDir);
+
     let keyURIAndFileNames = [];
+    const originalM3u8DirAndNames = [...m3u8DirAndNames];
 
     for (const file of files) {
       keyAndFileNamesformat = [];
       let tsFiles = [];
+
+      for (const m3u8DirAndName of originalM3u8DirAndNames) {
+        if (m3u8DirAndName.m3u8FileName === file) {
+          keyAndFileNamesformat.m3u8DirName = m3u8DirAndName.dirName;
+        }
+      }
 
       if (file.endsWith(".m3u8")) {
         const content = fs.readFileSync(`${m3u8FileDir}/${file}`, "utf8");
@@ -58,7 +85,6 @@ const getkeyURIAndFileNames = async () => {
     return [];
   }
 };
-
 const getM3U8Content = async () => {
   try {
     const files = fs.readdirSync(m3u8FileDir);

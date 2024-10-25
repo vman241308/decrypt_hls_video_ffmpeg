@@ -1,4 +1,5 @@
 // m3u8Downloader.js
+// Handles downloading m3u8 playlists and ts segments into appropriate directories
 const fs = require("fs");
 const path = require("path");
 const { getkeyURIAndFileNames, getM3U8Content } = require("./m3u8Parser");
@@ -36,6 +37,7 @@ const downloadM3U8AndTS = async () => {
 
   const client = await page.target().createCDPSession();
 
+  await makeDirectory(tsFilesDir);
   await makeDirectory(m3u8FileDir);
 
   await client.send("Page.setDownloadBehavior", {
@@ -74,11 +76,9 @@ const downloadM3U8AndTS = async () => {
     await delay(2000);
   }
 
-  const keyURIAndFileNames = await getkeyURIAndFileNames();
+  const keyURIAndFileNames = await getkeyURIAndFileNames(m3u8ContentLinks);
 
   try {
-    await makeDirectory(tsFilesDir);
-
     for (let i = 0; i < keyURIAndFileNames.length; i++) {
       const keyURIAndFileName = keyURIAndFileNames[i];
 
@@ -92,7 +92,7 @@ const downloadM3U8AndTS = async () => {
 
       try {
         for (const tsFile of keyURIAndFileName.tsFiles) {
-          let tsURL = subLink + tsFile;
+          let tsURL = subLink + keyURIAndFileName.m3u8DirName + "/" + tsFile;
 
           await page.evaluate(
             (tsURL, tsFile) => {
@@ -106,7 +106,6 @@ const downloadM3U8AndTS = async () => {
             tsURL,
             tsFile
           );
-          await delay(150);
         }
         await delay(2000);
       } catch (error) {
@@ -129,5 +128,4 @@ const downloadM3U8AndTS = async () => {
 
   return keyURIAndFileNames;
 };
-
 module.exports = { downloadM3U8AndTS };
