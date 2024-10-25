@@ -1,18 +1,27 @@
 // index.js
-const { downloadM3U8 } = require('./m3u8Downloader');
-const { parseM3U8 } = require('./m3u8Parser');
-const { decryptTSFiles, mergeTSFiles } = require('./tsHandler');
-const config = require('./config');
+const fs = require("fs");
+const { downloadM3U8AndTS } = require("./m3u8Downloader");
+const { decryptTSFiles, mergeTSFiles } = require("./tsHandler");
+const config = require("./config");
+
+let tsFilesDir = config.tsFilesDir;
+let decryptedDir = config.decryptedDir;
+let m3u8FileDir = config.m3u8FileDir;
+let outputDir = config.outputDir;
 
 const main = async () => {
-  await downloadM3U8();
+  fs.rmSync(tsFilesDir, { recursive: true, force: true });
+  fs.rmSync(decryptedDir, { recursive: true, force: true });
+  fs.rmSync(m3u8FileDir, { recursive: true, force: true });
+  fs.rmSync(outputDir, { recursive: true, force: true });
 
-  const { keyURI, tsFiles } = await parseM3U8();
-  await decryptTSFiles(keyURI);
+  const keyURIAndFileNames = await downloadM3U8AndTS();
+
+  await decryptTSFiles(keyURIAndFileNames);
+
   let date = Date.now().toString();
-
-  let outputFileName = `output_${date}.mp4`
-  await mergeTSFiles(outputFileName);
-}
+  let outputFileName = `output_${date}.mp4`;
+  await mergeTSFiles(keyURIAndFileNames, outputFileName);
+};
 
 main();
