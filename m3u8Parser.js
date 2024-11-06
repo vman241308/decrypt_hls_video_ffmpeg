@@ -11,11 +11,6 @@ let keyAndFileNamesformat = {
   tsFiles: [],
 };
 
-let m3u8DirAndNameFormat = {
-  dirName: "",
-  m3u8FileName: "",
-};
-
 const getkeyURIAndFileNames = async (m3u8ContentLinks) => {
   try {
     let m3u8DirAndNames = [];

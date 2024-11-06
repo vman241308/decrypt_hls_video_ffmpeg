@@ -11,6 +11,7 @@ const config = require("./config");
 
 let tsFilesDir = config.tsFilesDir;
 let m3u8FileDir = config.m3u8FileDir;
+let decryptedDir = config.decryptedDir;
 
 pt.use(StealthPlugin());
 
@@ -39,6 +40,7 @@ const downloadM3U8AndTS = async () => {
 
   await makeDirectory(tsFilesDir);
   await makeDirectory(m3u8FileDir);
+  await makeDirectory(decryptedDir);
 
   await client.send("Page.setDownloadBehavior", {
     behavior: "allow",
@@ -83,6 +85,12 @@ const downloadM3U8AndTS = async () => {
       const keyURIAndFileName = keyURIAndFileNames[i];
 
       await makeSubDirectory(tsFilesDir, keyURIAndFileName.dirName);
+      await makeSubDirectory(decryptedDir, keyURIAndFileName.dirName);
+
+      let concatFilePath = path.join(
+        `${decryptedDir}/${keyURIAndFileName.dirName}`,
+        "concat.txt"
+      );
 
       const clientTS = await page.target().createCDPSession();
       await clientTS.send("Page.setDownloadBehavior", {
@@ -93,6 +101,10 @@ const downloadM3U8AndTS = async () => {
       try {
         for (const tsFile of keyURIAndFileName.tsFiles) {
           let tsURL = subLink + keyURIAndFileName.m3u8DirName + "/" + tsFile;
+
+          await fs.appendFile(`${decryptedDir}/${keyURIAndFileName.dirName}/concat.txt`, `\nfile '${tsFile.replace(".enc.ts", ".dec.ts")}'`, function (err) {
+            if (err) throw err;
+          })
 
           await page.evaluate(
             (tsURL, tsFile) => {

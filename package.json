@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@munirsafi/hls-dl": "^0.1.1",
     "axios": "^1.7.7",
     "child_process": "^1.0.2",
     "crypto": "^1.0.1",

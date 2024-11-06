@@ -17,13 +17,8 @@ const decryptTSFiles = async (keyURIAndFileNames) => {
 
   const key = await keyResponse.arrayBuffer();
 
-  // Create decrypted directory if it doesn't exist
-  await makeDirectory(decryptedDir);
-
   for (let i = 0; i < keyURIAndFileNames.length; i++) {
     const keyURIAndFileName = keyURIAndFileNames[i];
-
-    await makeSubDirectory(decryptedDir, keyURIAndFileName.dirName);
 
     const files = fs.readdirSync(`${tsFilesDir}/${keyURIAndFileName.dirName}`);
 
@@ -69,28 +64,7 @@ const mergeTSFiles = async (keyURIAndFileNames, outputFileName) => {
     await makeSubDirectory(outputDir, keyURIAndFileName.dirName);
 
     try {
-      const files = fs
-        .readdirSync(`${decryptedDir}/${keyURIAndFileName.dirName}`)
-        .filter((file) => file.endsWith(".dec.ts"))
-        .sort((a, b) => {
-          // Extract numbers from filenames for proper sorting
-          const numA = parseInt(a.match(/\d+/)[0]);
-          const numB = parseInt(b.match(/\d+/)[0]);
-          return numA - numB;
-        });
-
-      const fileList = files.map((file) => `file '${file}'`).join("\n");
-
-      // Create a concat file listing all ts files
-      let concatFilePath = path.join(
-        `${decryptedDir}/${keyURIAndFileName.dirName}`,
-        "concat.txt"
-      );
-
-      // Ensure the directory exists before writing the concat file
-      await makeSubDirectory(decryptedDir, keyURIAndFileName.dirName);
-
-      await fs.promises.writeFile(concatFilePath, fileList);
+      let concatFilePath = `${decryptedDir}/${keyURIAndFileName.dirName}/concat.txt`
 
       await new Promise((resolve, reject) => {
         const ffmpeg = spawn("ffmpeg", [
@@ -116,9 +90,6 @@ const mergeTSFiles = async (keyURIAndFileNames, outputFileName) => {
         });
 
         ffmpeg.on("close", (code) => {
-          // Clean up concat file
-          fs.unlinkSync(concatFilePath);
-
           if (code === 0) {
             // Remove ts_files and decrypted_ts_files directories
             fs.rmSync(tsFilesDir, { recursive: true, force: true });
